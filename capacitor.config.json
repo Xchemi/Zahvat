@@ -1,0 +1,9 @@
+{
+  "appId": "com.zahvat.game",
+  "appName": "Захват",
+  "webDir": "www",
+  "backgroundColor": "#2a1766",
+  "android": {
+    "allowMixedContent": false
+  }
+}
