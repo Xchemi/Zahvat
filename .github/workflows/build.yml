@@ -23,7 +23,7 @@ jobs:
         run: sed -i 's/<activity/<activity android:screenOrientation="portrait"/' android/app/src/main/AndroidManifest.xml
       - name: Icons (optional)
         continue-on-error: true
-        run: npx capacitor-assets generate --android --iconBackgroundColor '#2a1766' --iconBackgroundColorDark '#2a1766'
+        run: npx @capacitor/assets generate --android --iconBackgroundColor '#2a1766' --iconBackgroundColorDark '#2a1766'
       - name: Sync
         run: npx cap sync android
       - name: Build debug APK
