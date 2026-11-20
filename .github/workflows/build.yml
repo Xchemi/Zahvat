@@ -17,10 +17,33 @@ jobs:
           java-version: 17
       - name: Install
         run: npm install
+      - name: Google sign-in plugin
+        run: |
+          if [ -f google-services.json ]; then
+            CAP=$(node -p "require('@capacitor/core/package.json').version.split('.')[0]")
+            npm install @capacitor-firebase/authentication@$CAP
+            node -e "const f='capacitor.config.json',c=JSON.parse(require('fs').readFileSync(f,'utf8'));c.plugins=Object.assign(c.plugins||{},{FirebaseAuthentication:{providers:['google.com']}});require('fs').writeFileSync(f,JSON.stringify(c,null,2))"
+          else
+            echo "google-services.json not found - Google sign-in skipped"
+          fi
+      - name: Firebase project id
+        run: |
+          if [ -f google-services.json ]; then
+            PID=$(node -p "require('./google-services.json').project_info.project_id")
+            sed -i "s/__FB_PROJECT__/$PID/" www/index.html
+          else
+            echo "google-services.json not found - cloud save disabled"
+          fi
       - name: Add Android project
         run: npx cap add android
       - name: Portrait orientation
         run: sed -i 's/<activity/<activity android:screenOrientation="portrait"/' android/app/src/main/AndroidManifest.xml
+      - name: Firebase config
+        run: if [ -f google-services.json ]; then cp google-services.json android/app/google-services.json; fi
+      - name: Fixed signing key
+        run: |
+          mkdir -p ~/.android
+          if [ -f debug.keystore ]; then cp debug.keystore ~/.android/debug.keystore; fi
       - name: Icons (optional)
         continue-on-error: true
         run: npx @capacitor/assets generate --android --iconBackgroundColor '#2a1766' --iconBackgroundColorDark '#2a1766'
